@@ -1,98 +1,163 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Button } from "@/components/Button";
+import { DebtCard } from "@/components/DebtCard";
+import { StatCard } from "@/components/StatCard";
 
-export default function HomeScreen() {
+const upcomingDebts = [
+  {
+    id: "1",
+    debtor: "Deny Prasetyo",
+    amount: 2500000,
+    dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    note: "Pinjaman kerjaan kantor",
+    status: "urgent" as const,
+  },
+  {
+    id: "2",
+    debtor: "Mega Putri",
+    amount: 1100000,
+    dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    note: "DP katering",
+    status: "overdue" as const,
+  },
+];
+
+const quickActions = [
+  {
+    id: "reminder",
+    label: "Kirim pengingat",
+    description: "Template WA siap pakai",
+    icon: "logo-whatsapp" as const,
+  },
+  {
+    id: "share",
+    label: "Bagikan ringkasan",
+    description: "Keluar sebagai PDF/CSV",
+    icon: "share-social-outline" as const,
+  },
+  {
+    id: "note",
+    label: "Catatan cepat",
+    description: "Simak janji pembayaran",
+    icon: "document-text-outline" as const,
+  },
+];
+
+export default function TotalScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView className="flex-1 bg-slate-50">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-row items-center justify-between">
+          <View>
+            <Text className="text-sm text-slate-500">Outstanding</Text>
+            <Text className="text-3xl font-semibold text-slate-900">Rp12.500.000</Text>
+          </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          <View className="flex-row items-center gap-3">
+            <View className="rounded-full bg-white p-3">
+              <Ionicons name="notifications-outline" size={20} color="#0f172a" />
+            </View>
+
+            <Button label="+ Tambah" variant="primary" onPress={() => router.push("/debt/new")} />
+          </View>
+        </View>
+
+        <Text className="mt-6 text-sm text-slate-500">Ringkasan minggu ini</Text>
+
+        <View className="mt-3 flex-row gap-3">
+          <StatCard
+            label="Total Hutang"
+            amount={12500000}
+            tone="dark"
+            description="4 kontak belum bayar"
+            icon={<Ionicons name="wallet-outline" size={18} color="#f8fafc" />}
+            className="flex-1"
+          />
+          <StatCard
+            label="Jatuh Tempo"
+            amount={3200000}
+            tone="accent"
+            description="2 tagihan minggu ini"
+            trendLabel="Turun 12% dari minggu lalu"
+            trendIsPositive
+            icon={<Ionicons name="alarm-outline" size={18} color="#065f46" />}
+            className="flex-1"
+          />
+        </View>
+
+        <View className="mt-3 flex-row gap-3">
+          <StatCard
+            label="Tertagih bulan ini"
+            amount={8200000}
+            description="3 pembayaran selesai"
+            icon={<Ionicons name="sparkles-outline" size={18} color="#0f172a" />}
+            className="flex-1"
+          />
+          <StatCard
+            label="Reminder aktif"
+            amount={5}
+            showCurrency={false}
+            description="terjadwal via WA & email"
+            icon={<Ionicons name="send-outline" size={18} color="#0f172a" />}
+            className="flex-1"
+          />
+        </View>
+
+        <View className="mt-8 flex-row items-center justify-between">
+          <Text className="text-lg font-semibold text-slate-900">Hutang terdekat</Text>
+          <Text className="text-sm text-slate-500">Lihat semua</Text>
+        </View>
+
+        <View className="mt-4 space-y-3">
+          {upcomingDebts.map((debt) => (
+            <DebtCard
+              key={debt.id}
+              debtor={debt.debtor}
+              amount={debt.amount}
+              dueDate={debt.dueDate}
+              note={debt.note}
+              status={debt.status}
+            />
+          ))}
+        </View>
+
+        <View className="mt-8">
+          <Text className="text-lg font-semibold text-slate-900">Aksi cepat</Text>
+          <View className="mt-4 gap-3">
+            {quickActions.map((action) => (
+              <QuickActionCard key={action.id} {...action} />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+type QuickAction = (typeof quickActions)[number];
+
+function QuickActionCard({ label, description, icon }: QuickAction) {
+  return (
+    <View className="flex-row items-center justify-between rounded-3xl border border-slate-100 bg-white p-4">
+      <View className="flex-row items-center gap-3">
+        <View className="rounded-2xl bg-slate-100 p-3">
+          <Ionicons name={icon} size={20} color="#0f172a" />
+        </View>
+        <View>
+          <Text className="text-base font-semibold text-slate-900">{label}</Text>
+          <Text className="text-sm text-slate-500">{description}</Text>
+        </View>
+      </View>
+
+      <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+    </View>
+  );
+}
